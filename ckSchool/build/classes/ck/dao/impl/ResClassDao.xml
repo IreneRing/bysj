@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="ck.dao.ResClassDao">
+	
+	<!-- 建立sql查询结果字段与实体属性的映射关系 -->
+	<resultMap id="ResClassMap" type="ck.bean.ResClass">
+		<id column="rcid" property="rcid" />
+		<result column="rcclass" property="rcclass" />
+	</resultMap>
+	<!-- 查找所有 -->
+	<select id="findAllResClass" resultMap="ResClassMap">
+		SELECT * FROM tb_resources_class
+	</select>
+	<!-- 通過id查找 -->
+	<select id="findResClassById" resultMap="ResClassMap">
+		SELECT * FROM tb_resources_class where rcid=#{rcid}
+	</select>
+	<!-- 通過名字查找 -->
+	<select id="findResClassByName" resultMap="ResClassMap">
+		SELECT * FROM tb_resources_class where rcclass=#{rcclass}
+	</select>
+	<insert id="addResClass" parameterType="ck.bean.ResClass">
+		INSERT INTO tb_resources_class(rcclass) 
+		VALUES(#{rcclass})
+	</insert>
+	<update id="updResClass" parameterType="ck.bean.ResClass">
+    	UPDATE tb_resources_class SET rcclass=#{rcclass}
+		WHERE rcid=#{rcid}
+	</update>
+	<delete id="delResClass" parameterType="java.lang.Integer">
+    	delete from tb_resources_class where rcid = #{rcid}
+	</delete>
+	<delete id="delAllResClass" parameterType="java.util.List">
+    	delete from tb_resources_class where rcid 
+			in 
+			<foreach collection="list" item="rcid" 
+				open="(" close=")" separator=",">
+				 #{rcid}
+			</foreach>
+	</delete>
+	
+	<resultMap id="ResClassAndResMap" type="ck.bean.ResClass">
+		<id column="rcid" property="rcid" />
+		<result column="rcclass" property="rcclass" />
+		<collection property="res"   ofType="ck.bean.Res" >
+			<id column="rid" property="rid" />
+			<result column="rname" property="rname" />
+			<result column="rmessage" property="rmessage" />
+			<result column="link" property="link" />
+			<result column="rdate" property="rdate" />
+			<result column="uid" property="uid" />
+			<result column="rcid" property="rcid" />
+		</collection>
+	</resultMap>
+	<!-- 查找所有 -->
+	<select id="findResClassAndRes" resultMap="ResClassAndResMap">
+		SELECT * FROM tb_resources_class LEFT JOIN	tb_resources ON	tb_resources_class.rcid=tb_resources.rcid ORDER BY tb_resources_class.rcid
+	</select>
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="ck.dao.ResDao">
+	
+	<!-- 建立sql查询结果字段与实体属性的映射关系 -->
+	<resultMap id="ResExMap" type="ck.bean.ResEx">
+		<result column="rid" property="rid" />
+		<result column="rname" property="rname" />
+		<result column="rmessage" property="rmessage" />
+		<result column="link" property="link" />
+		<result column="rdate" property="rdate" />
+		<result column="uid" property="uid" />
+		<result column="rcid" property="rcid" />
+		<result column="rcclass" property="rcclass" />
+		<result column="username" property="username" />
+	</resultMap>
+	<!-- 查找所有 -->
+	<select id="findAllRes" resultMap="ResExMap">
+		SELECT tb_resources.*,tb_user.username,tb_resources_class.rcclass FROM tb_resources,tb_resources_class,tb_user WHERE tb_resources.uid=tb_user.uid AND tb_resources_class.rcid=tb_resources.rcid 
+	</select>
+	<!-- 按種類查找資源 -->
+	<select id="findResBySort" resultMap="ResExMap">
+		
+	</select>
+	<!-- id查找 -->
+	<select id="findResExById" resultMap="ResExMap">
+	SELECT tb_resources.*,tb_resources_class.rcclass,tb_user.username FROM tb_resources,tb_resources_class,tb_user WHERE tb_resources.rid=#{rid} and tb_resources.rcid=tb_resources_class.rcid AND tb_user.uid=tb_resources.uid
+	</select>
+	<!-- rcid查找 -->
+	<select id="findResExByClass" resultMap="ResExMap">
+	SELECT tb_resources.*,tb_resources_class.rcclass,tb_user.username FROM tb_resources,tb_resources_class,tb_user WHERE tb_resources.rcid=#{rcid} and tb_resources.rcid=tb_resources_class.rcid AND tb_user.uid=tb_resources.uid
+	</select>
+	<!-- 日期查找 -->
+	<select id="findResExByDate" resultMap="ResExMap">
+	SELECT tb_resources.*,tb_resources_class.rcclass,tb_user.username FROM tb_resources,tb_resources_class,tb_user WHERE tb_resources.rdate
+	like
+	'%' #{rdate} '%' and tb_resources.rcid=tb_resources_class.rcid AND tb_user.uid=tb_resources.uid
+	</select>
+	
+	<insert id="addResEx" parameterType="ck.bean.Res">
+		INSERT INTO tb_resources(rname,rmessage,rdate,link,uid,rcid) 
+		VALUES(#{rname},#{rmessage},#{rdate},#{link},#{uid},#{rcid})
+	</insert>
+	
+	<update id="updResEx" parameterType="ck.bean.Res">
+    	UPDATE tb_resources SET rname=#{rname} ,rmessage=#{rmessage} , rdate=#{rdate} ,link=#{link} ,uid=#{uid} ,rcid=#{rcid}
+		WHERE rid=#{rid}
+	</update>
+	
+	<delete id="delResEx" parameterType="java.lang.Integer">
+    	delete from tb_resources where rid = #{rid}
+	</delete>
+	
+	<delete id="delAllRes" parameterType="java.util.List">
+    	delete from tb_resources where rid 
+			in 
+			<foreach collection="list" item="rid" 
+				open="(" close=")" separator=",">
+				 #{rid}
+			</foreach>
+	</delete>
+</mapper>
